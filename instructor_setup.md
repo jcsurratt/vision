@@ -54,7 +54,7 @@ python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
-The `grep -n . requirements.txt` command should show `tensorflow-cpu`. If it does not, the Pi has an older copy of `requirements.txt`.
+The `grep -n . requirements.txt` command should show `ai-edge-litert`. If it does not, the Pi has an older copy of `requirements.txt`.
 
 If MediaPipe installation is slow or unavailable on your Raspberry Pi OS image, install packages ahead of camp and test on the exact Pi image students will use.
 
@@ -195,15 +195,15 @@ python3 -m pip install -r requirements.txt --extra-index-url https://google.gith
 
 On Raspberry Pi OS Trixie, use the `pyenv` Python 3.12 setup above instead of the system Python 3.13.
 
-### `ModuleNotFoundError: No module named tensorflow`
+### `ModuleNotFoundError: No module named ai_edge_litert`
 
-The object detector uses `tensorflow-cpu` as its TensorFlow Lite provider. Confirm that the Pi has the current requirements file, then reinstall requirements inside the virtual environment:
+The object detector uses `ai-edge-litert` as its TensorFlow Lite provider. Confirm that the Pi has the current requirements file, then reinstall requirements inside the virtual environment:
 
 ```bash
 grep -n . requirements.txt
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
-python3 -c "import tensorflow as tf; print('TensorFlow OK', tf.__version__)"
+python3 -c "from ai_edge_litert.interpreter import Interpreter; print('LiteRT OK')"
 ```
 
 ### Object detector says model files are missing

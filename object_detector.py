@@ -25,28 +25,26 @@ try:
 except ImportError as error:
     INTERPRETER_IMPORT_ERRORS.append(f"tflite_runtime: {error}")
     try:
-        import tensorflow as tf
-
-        Interpreter = tf.lite.Interpreter
+        from ai_edge_litert.interpreter import Interpreter
     except ImportError as error:
-        INTERPRETER_IMPORT_ERRORS.append(f"tensorflow: {error}")
+        INTERPRETER_IMPORT_ERRORS.append(f"ai_edge_litert: {error}")
         try:
-            from tensorflow.lite.python.interpreter import Interpreter
+            import tensorflow as tf
+
+            Interpreter = tf.lite.Interpreter
         except ImportError as error:
-            INTERPRETER_IMPORT_ERRORS.append(f"tensorflow.lite.python.interpreter: {error}")
+            INTERPRETER_IMPORT_ERRORS.append(f"tensorflow: {error}")
             try:
-                from ai_edge_litert.interpreter import Interpreter
+                from tensorflow.lite.python.interpreter import Interpreter
             except ImportError as error:
-                INTERPRETER_IMPORT_ERRORS.append(f"ai_edge_litert: {error}")
+                INTERPRETER_IMPORT_ERRORS.append(f"tensorflow.lite.python.interpreter: {error}")
                 Interpreter = None
 except Exception as error:
     INTERPRETER_IMPORT_ERRORS.append(f"tflite_runtime: {error}")
     try:
-        import tensorflow as tf
-
-        Interpreter = tf.lite.Interpreter
+        from ai_edge_litert.interpreter import Interpreter
     except Exception as error:
-        INTERPRETER_IMPORT_ERRORS.append(f"tensorflow: {error}")
+        INTERPRETER_IMPORT_ERRORS.append(f"ai_edge_litert: {error}")
         Interpreter = None
 
 
@@ -118,8 +116,8 @@ def check_model_files():
     """Make sure the model files are present before starting."""
     if Interpreter is None:
         print("ERROR: TensorFlow Lite is not installed.")
-        print("The object detector needs the tensorflow-cpu package.")
-        print("First confirm the Pi copy of requirements.txt includes tensorflow-cpu:")
+        print("The object detector needs the ai-edge-litert package.")
+        print("First confirm the Pi copy of requirements.txt includes ai-edge-litert:")
         print("    grep -n . requirements.txt")
         print("Activate the virtual environment and install the requirements:")
         print("    source .venv/bin/activate")
@@ -127,8 +125,8 @@ def check_model_files():
             "    python3 -m pip install -r requirements.txt "
             "--extra-index-url https://google.github.io/mediapipe/getting_started/python.html"
         )
-        print("If tensorflow-cpu still does not install, try installing it directly:")
-        print("    python3 -m pip install tensorflow-cpu")
+        print("If ai-edge-litert still does not install, try installing it directly:")
+        print("    python3 -m pip install ai-edge-litert")
         print("Import attempts:")
         for import_error in INTERPRETER_IMPORT_ERRORS:
             print("   -", import_error)

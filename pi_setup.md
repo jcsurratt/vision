@@ -158,7 +158,7 @@ python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
-The `grep -n . requirements.txt` command should show `tensorflow-cpu` in the file. If it does not, the Raspberry Pi has an older copy of `requirements.txt`; replace it with the current project copy before continuing.
+The `grep -n . requirements.txt` command should show `ai-edge-litert` in the file. If it does not, the Raspberry Pi has an older copy of `requirements.txt`; replace it with the current project copy before continuing.
 
 ### Older Raspberry Pi OS Images
 
@@ -194,7 +194,7 @@ With the virtual environment active, run:
 python3 -c "import cv2; print('OpenCV OK')"
 python3 -c "import mediapipe; print('MediaPipe OK')"
 python3 -c "import numpy; print('NumPy OK')"
-python3 -c "import tensorflow as tf; print('TensorFlow OK', tf.__version__)"
+python3 -c "from ai_edge_litert.interpreter import Interpreter; print('LiteRT OK')"
 ```
 
 If one of these commands fails, reinstall the project requirements:
@@ -397,9 +397,9 @@ On 64-bit Raspberry Pi OS, `uname -m` should usually show:
 aarch64
 ```
 
-### `ModuleNotFoundError: No module named tensorflow`
+### `ModuleNotFoundError: No module named ai_edge_litert`
 
-The Raspberry Pi probably has an older copy of `requirements.txt`, or `tensorflow-cpu` was not installed. Confirm that `tensorflow-cpu` is listed:
+The Raspberry Pi probably has an older copy of `requirements.txt`, or `ai-edge-litert` was not installed. Confirm that `ai-edge-litert` is listed:
 
 ```bash
 grep -n . requirements.txt
@@ -408,7 +408,7 @@ grep -n . requirements.txt
 Expected output should include:
 
 ```text
-3:tensorflow-cpu
+3:ai-edge-litert
 ```
 
 Then activate the virtual environment and reinstall requirements:
@@ -418,13 +418,13 @@ source .venv/bin/activate
 python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
-The object detector uses `tensorflow-cpu` as the TensorFlow Lite provider because `tflite-runtime` is not available for the newer Raspberry Pi OS Trixie/Python 3.12 setup used here.
+The object detector uses `ai-edge-litert` as the TensorFlow Lite provider because `tflite-runtime` and `tensorflow-cpu` are not available for the newer Raspberry Pi OS Trixie/Python 3.12 ARM64 setup used here.
 
-If `tensorflow-cpu` is still missing after that command, install it directly and recheck:
+If `ai-edge-litert` is still missing after that command, install it directly and recheck:
 
 ```bash
-python3 -m pip install tensorflow-cpu
-python3 -c "import tensorflow as tf; print('TensorFlow OK', tf.__version__)"
+python3 -m pip install ai-edge-litert
+python3 -c "from ai_edge_litert.interpreter import Interpreter; print('LiteRT OK')"
 ```
 
 ### Object detector says model files are missing
