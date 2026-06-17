@@ -165,7 +165,9 @@ Try changing one setting at a time. Run the program again and see what happens.
 
 ## More Details
 
+- [about_object_detector.md](about_object_detector.md)
 - [about_play_music.md](about_play_music.md)
+- [about_rock_paper_scissors.md](about_rock_paper_scissors.md)
 - [about_text_to_speech.md](about_text_to_speech.md)
 
 ## Visual Studio Code Tip
