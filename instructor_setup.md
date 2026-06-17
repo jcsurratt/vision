@@ -1,12 +1,13 @@
 # Instructor Setup Guide
 
-This guide is for preparing Raspberry Pi 4 computers for the webcam AI camp project.
+This guide is for preparing Raspberry Pi 4 or Raspberry Pi 5 computers for the webcam AI camp project.
 
 ## Recommended Hardware
 
-- Raspberry Pi 4
+- Raspberry Pi 4 or Raspberry Pi 5
 - Raspberry Pi OS, 64-bit recommended
 - USB webcam
+- Speakers or headphones
 - Monitor, keyboard, mouse
 - Reliable power supply
 
@@ -22,7 +23,7 @@ sudo apt upgrade -y
 Install useful Python and camera dependencies:
 
 ```bash
-sudo apt install -y python3-venv python3-pip libopenblas-dev libopencv-dev v4l-utils fswebcam unzip wget curl git
+sudo apt install -y python3-venv python3-pip libopenblas-dev libopencv-dev v4l-utils fswebcam unzip wget curl git alsa-utils
 ```
 
 ## Create the Virtual Environment
@@ -121,6 +122,39 @@ Expected result:
 - Pressing `space` starts a countdown.
 - The program classifies Rock, Paper, or Scissors and updates the score.
 
+## Test Audio
+
+Check the speaker output:
+
+```bash
+speaker-test -t wav -c 2
+```
+
+Press `Ctrl+C` to stop the speaker test.
+
+Then test the included MP3 player:
+
+```bash
+python3 play_music.py
+```
+
+Expected result:
+
+- `winner.mp3` plays through the selected audio output.
+
+## Test Text To Speech
+
+This demo requires internet access because it uses Google Text-to-Speech.
+
+```bash
+python3 text_to_speech.py
+```
+
+Expected result:
+
+- The program asks for text.
+- The typed text is converted to speech and played.
+
 ## Visual Studio Code Setup
 
 Install Visual Studio Code if it is not already installed:
@@ -213,6 +247,25 @@ Confirm the files are named exactly:
 ```text
 models/detect.tflite
 models/labelmap.txt
+```
+
+### No sound plays
+
+Check speakers/headphones, volume, and selected audio output:
+
+```bash
+speaker-test -t wav -c 2
+ls *.mp3
+```
+
+### Text to speech fails
+
+Confirm the Pi has internet access and the virtual environment packages are installed:
+
+```bash
+ping -c 4 google.com
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
 ### The video is slow

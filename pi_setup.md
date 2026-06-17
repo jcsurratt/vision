@@ -11,6 +11,7 @@ Use:
 - Raspberry Pi OS 64-bit with desktop
 - Raspberry Pi 4 or Raspberry Pi 5
 - USB webcam
+- Speakers or headphones for audio demos
 - Monitor, keyboard, and mouse
 - Internet connection during setup
 
@@ -42,13 +43,13 @@ After the Pi restarts, open Terminal again.
 
 ## 4. Install System Packages
 
-Install Python, OpenCV support, camera tools, and helpful diagnostics.
+Install Python, OpenCV support, camera tools, audio support, and helpful diagnostics.
 
 Raspberry Pi OS based on Debian Trixie no longer provides `libatlas-base-dev`, so use `libopenblas-dev` instead:
 
 ```bash
 sudo apt update
-sudo apt install -y python3-venv python3-pip libopenblas-dev libopencv-dev v4l-utils fswebcam unzip wget curl git
+sudo apt install -y python3-venv python3-pip libopenblas-dev libopencv-dev v4l-utils fswebcam unzip wget curl git alsa-utils
 ```
 
 Add your user to the `video` group so Python/OpenCV can access camera devices:
@@ -94,8 +95,12 @@ If you are copying the folder from another computer, the final folder should con
 camera_test.py
 object_detector.py
 rock_paper_scissors_ai.py
+play_music.py
+text_to_speech.py
 requirements.txt
 models/
+winner.mp3
+loser.mp3
 ```
 
 Then open Terminal in the project folder.
@@ -195,6 +200,8 @@ python3 -c "import cv2; print('OpenCV OK')"
 python3 -c "import mediapipe; print('MediaPipe OK')"
 python3 -c "import numpy; print('NumPy OK')"
 python3 -c "from ai_edge_litert.interpreter import Interpreter; print('LiteRT OK')"
+python3 -c "import pygame; print('Pygame OK')"
+python3 -c "import gtts; print('gTTS OK')"
 ```
 
 If one of these commands fails, reinstall the project requirements:
@@ -288,7 +295,39 @@ Controls:
 
 The app should draw boxes around recognized objects. If an object in `TARGET_OBJECTS` is detected, the screen will show `TARGET FOUND!`.
 
-## 13. Visual Studio Code Setup
+## 13. Test Audio
+
+Make sure speakers or headphones are connected and the volume is turned up.
+
+Run:
+
+```bash
+speaker-test -t wav -c 2
+```
+
+Press `Ctrl+C` to stop the speaker test.
+
+Then test the included MP3 file:
+
+```bash
+python3 play_music.py
+```
+
+The script plays `winner.mp3` by default.
+
+## 14. Run Text To Speech
+
+The text-to-speech demo uses Google Text-to-Speech, so the Raspberry Pi needs internet access.
+
+Run:
+
+```bash
+python3 text_to_speech.py
+```
+
+Type a sentence and press `Enter`.
+
+## 15. Visual Studio Code Setup
 
 Install Visual Studio Code if it is not already installed:
 
@@ -332,7 +371,7 @@ source .venv/bin/activate
 python3 camera_test.py
 ```
 
-## 14. Raspberry Pi 5 Notes
+## 16. Raspberry Pi 5 Notes
 
 For Raspberry Pi 5:
 
@@ -343,7 +382,7 @@ For Raspberry Pi 5:
 
 The Python commands are otherwise the same as Raspberry Pi 4.
 
-## 15. Troubleshooting
+## 17. Troubleshooting
 
 ### Webcam does not open
 
@@ -442,6 +481,39 @@ models/detect.tflite
 models/labelmap.txt
 ```
 
+### No sound plays
+
+Check the selected audio device and volume:
+
+```bash
+speaker-test -t wav -c 2
+```
+
+If you are using HDMI audio, make sure the monitor supports audio and the Pi is using the correct output device in the Raspberry Pi sound settings.
+
+If `play_music.py` says an MP3 is missing, confirm the files exist:
+
+```bash
+ls *.mp3
+```
+
+### Text to speech fails
+
+`text_to_speech.py` uses Google Text-to-Speech and needs internet access.
+
+Check the internet connection:
+
+```bash
+ping -c 4 google.com
+```
+
+Then reinstall the Python packages:
+
+```bash
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
+```
+
 ### Video is slow
 
 Try these changes:
@@ -453,7 +525,7 @@ Try these changes:
 - Close extra programs.
 - Use active cooling on Raspberry Pi 5.
 
-## 16. Quick Full Command List
+## 18. Quick Full Command List
 
 Use this section when setting up a Pi from scratch after the first boot wizard.
 
@@ -467,7 +539,7 @@ After reboot:
 
 ```bash
 sudo apt update
-sudo apt install -y python3-venv python3-pip libopenblas-dev libopencv-dev v4l-utils fswebcam unzip wget curl git
+sudo apt install -y python3-venv python3-pip libopenblas-dev libopencv-dev v4l-utils fswebcam unzip wget curl git alsa-utils
 sudo apt install -y code
 code --install-extension ms-python.python
 sudo usermod -a -G video $USER
@@ -503,4 +575,6 @@ v4l2-ctl --list-devices
 python3 camera_test.py
 python3 rock_paper_scissors_ai.py
 python3 object_detector.py
+python3 play_music.py
+python3 text_to_speech.py
 ```

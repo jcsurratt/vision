@@ -18,6 +18,8 @@ models/labelmap.txt
 
 The label file should contain one object label per line.
 
+This folder is only for object detection model files. The audio demo files, such as `winner.mp3` and `loser.mp3`, should stay in the main project folder unless the Python code is changed to point somewhere else.
+
 To download a starter COCO model on the Raspberry Pi, run these commands from the project folder:
 
 ```bash

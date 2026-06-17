@@ -1,17 +1,20 @@
 # Raspberry Pi Webcam AI Camp
 
-Welcome! In this project you will use a Raspberry Pi 4, a USB webcam, and Python to build two computer vision demos:
+Welcome! In this project you will use a Raspberry Pi, a USB webcam, audio, and Python to build computer vision and sound demos:
 
 1. A webcam object detector
 2. A Rock Paper Scissors game that watches your hand
+3. A simple MP3 player
+4. A text-to-speech demo
 
 You do not need to be an expert coder. The programs are written so you can run them first, then experiment by changing a few clearly labeled settings near the top of each file.
 
 ## What You Need
 
-- Raspberry Pi 4
+- Raspberry Pi 4 or Raspberry Pi 5
 - Raspberry Pi OS
 - USB webcam
+- Speakers or headphones
 - Monitor
 - Keyboard
 - Mouse
@@ -22,8 +25,9 @@ You do not need to be an expert coder. The programs are written so you can run t
 1. Plug the monitor into the Raspberry Pi.
 2. Plug in the keyboard and mouse.
 3. Plug in the USB webcam.
-4. Connect power to the Raspberry Pi.
-5. Wait for Raspberry Pi OS to start.
+4. Connect speakers or headphones if you want to use the audio demos.
+5. Connect power to the Raspberry Pi.
+6. Wait for Raspberry Pi OS to start.
 
 ## 2. Open This Project Folder
 
@@ -31,9 +35,13 @@ Open the folder that contains these files:
 
 - `camera_test.py`
 - `object_detector.py`
+- `play_music.py`
 - `rock_paper_scissors_ai.py`
+- `text_to_speech.py`
 - `requirements.txt`
 - `models/`
+- `winner.mp3`
+- `loser.mp3`
 
 You can run the programs from Visual Studio Code or from the Terminal.
 
@@ -101,6 +109,26 @@ How to play:
 - Press `r` to reset the score.
 - Press `q` to quit.
 
+## 7. Play an MP3
+
+Run:
+
+```bash
+python3 play_music.py
+```
+
+The script plays `winner.mp3` by default. To play another file, change `AUDIO_FILE` near the bottom of `play_music.py`.
+
+## 8. Try Text To Speech
+
+Run:
+
+```bash
+python3 text_to_speech.py
+```
+
+Type a sentence and press `Enter`. The script uses Google Text-to-Speech, so the Raspberry Pi needs an internet connection.
+
 ## Safe Things To Change
 
 Look near the top of each Python file for a section labeled `STUDENT SETTINGS`.
@@ -124,7 +152,21 @@ In `rock_paper_scissors_ai.py`, you can change:
 - `AI_NAMES`
 - `CAMERA_NUMBER`
 
+In `play_music.py`, you can change:
+
+- `AUDIO_FILE`
+
+In `text_to_speech.py`, you can change:
+
+- The text typed when the program asks what to say
+- The `lang` value passed to `speak_text`
+
 Try changing one setting at a time. Run the program again and see what happens.
+
+## More Details
+
+- [about_play_music.md](about_play_music.md)
+- [about_text_to_speech.md](about_text_to_speech.md)
 
 ## Visual Studio Code Tip
 
