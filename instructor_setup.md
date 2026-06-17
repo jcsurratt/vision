@@ -22,18 +22,35 @@ sudo apt upgrade -y
 Install useful Python and camera dependencies:
 
 ```bash
-sudo apt install -y python3-venv python3-pip libatlas-base-dev libopencv-dev
+sudo apt install -y python3-venv python3-pip libopenblas-dev libopencv-dev v4l-utils fswebcam unzip wget curl git
 ```
 
 ## Create the Virtual Environment
 
+On Raspberry Pi OS based on Debian Trixie, use Python 3.12 through `pyenv`. Trixie defaults to Python 3.13, which does not work cleanly with MediaPipe on Raspberry Pi ARM64.
+
+Install build tools and `pyenv`:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev git
+curl https://pyenv.run | bash
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+source ~/.bashrc
+pyenv install 3.12
+```
+
 From the project folder:
 
 ```bash
-python3 -m venv .venv
+deactivate 2>/dev/null
+rm -rf .venv
+~/.pyenv/versions/3.12.*/bin/python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
 If MediaPipe installation is slow or unavailable on your Raspberry Pi OS image, install packages ahead of camp and test on the exact Pi image students will use.
@@ -48,6 +65,16 @@ models/labelmap.txt
 ```
 
 Use a COCO object detection TensorFlow Lite model. The label file should contain one label per line.
+
+Download a starter model:
+
+```bash
+mkdir -p models
+wget https://storage.googleapis.com/download.tensorflow.org/models/tflite/coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip
+unzip -j coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip "detect.tflite" -d models/
+wget -O models/labelmap.txt https://raw.githubusercontent.com/JerryKurata/TFlite-object-detection/main/labelmap.txt
+rm coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip
+```
 
 ## Test the Webcam
 
@@ -149,12 +176,30 @@ The virtual environment may not be active, or requirements were not installed.
 
 ```bash
 source .venv/bin/activate
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
 ### `ModuleNotFoundError: No module named mediapipe`
 
 MediaPipe may not have installed correctly for the Pi image or Python version. Confirm the Raspberry Pi OS architecture and Python version, then reinstall inside the virtual environment.
+
+```bash
+python3 --version
+uname -m
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
+```
+
+On Raspberry Pi OS Trixie, use the `pyenv` Python 3.12 setup above instead of the system Python 3.13.
+
+### `ModuleNotFoundError: No module named tensorflow`
+
+The object detector uses `tensorflow-cpu` as its TensorFlow Lite provider. Reinstall requirements inside the virtual environment:
+
+```bash
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
+```
 
 ### Object detector says model files are missing
 

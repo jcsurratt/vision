@@ -41,13 +41,15 @@ You can run the programs from Visual Studio Code or from the Terminal.
 
 A virtual environment, or `venv`, keeps this project's Python packages together.
 
+On Raspberry Pi OS based on Debian Trixie, use the detailed [Raspberry Pi setup guide](pi_setup.md). Trixie uses Python 3.13 by default, but MediaPipe needs a Python 3.12 virtual environment on the Pi.
+
 Open a Terminal in this project folder and run:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
 When the virtual environment is active, your Terminal prompt usually starts with `(.venv)`.

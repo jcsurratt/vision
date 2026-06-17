@@ -42,11 +42,13 @@ After the Pi restarts, open Terminal again.
 
 ## 4. Install System Packages
 
-Install Python, OpenCV support, camera tools, and helpful diagnostics:
+Install Python, OpenCV support, camera tools, and helpful diagnostics.
+
+Raspberry Pi OS based on Debian Trixie no longer provides `libatlas-base-dev`, so use `libopenblas-dev` instead:
 
 ```bash
 sudo apt update
-sudo apt install -y python3-venv python3-pip libatlas-base-dev libopencv-dev v4l-utils fswebcam
+sudo apt install -y python3-venv python3-pip libopenblas-dev libopencv-dev v4l-utils fswebcam unzip wget curl git
 ```
 
 Add your user to the `video` group so Python/OpenCV can access camera devices:
@@ -110,13 +112,60 @@ If the folder has a different name, use that folder name instead.
 
 Create the virtual environment on the Raspberry Pi itself. Do not copy a `.venv` folder from Windows or another computer because virtual environments are tied to the operating system and Python install that created them.
 
-From inside the project folder, run:
+### Raspberry Pi OS Trixie / Python 3.13
+
+Fresh Raspberry Pi OS images based on Debian Trixie use Python 3.13 by default. MediaPipe does not currently install cleanly in this project with Python 3.13 on Raspberry Pi ARM64, so use `pyenv` to install Python 3.12 for this project.
+
+Install the build tools needed by `pyenv`:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev git
+```
+
+Install `pyenv`:
+
+```bash
+curl https://pyenv.run | bash
+```
+
+Add `pyenv` to your shell:
+
+```bash
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Install Python 3.12:
+
+```bash
+pyenv install 3.12
+```
+
+This can take several minutes because the Pi compiles Python locally.
+
+From inside the project folder, create the virtual environment with Python 3.12:
+
+```bash
+deactivate 2>/dev/null
+rm -rf .venv
+~/.pyenv/versions/3.12.*/bin/python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
+```
+
+### Older Raspberry Pi OS Images
+
+If your Raspberry Pi OS image uses Python 3.11 or Python 3.12 already, you can use the system Python:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
 When the virtual environment is active, your Terminal prompt usually starts with:
@@ -142,13 +191,13 @@ With the virtual environment active, run:
 python3 -c "import cv2; print('OpenCV OK')"
 python3 -c "import mediapipe; print('MediaPipe OK')"
 python3 -c "import numpy; print('NumPy OK')"
-python3 -c "import tflite_runtime; print('TensorFlow Lite Runtime OK')"
+python3 -c "from tensorflow.lite import Interpreter; print('TensorFlow Lite OK')"
 ```
 
 If one of these commands fails, reinstall the project requirements:
 
 ```bash
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
 ## 9. Add TensorFlow Lite Model Files
@@ -161,6 +210,16 @@ models/labelmap.txt
 ```
 
 Use a COCO object detection TensorFlow Lite model. The label file should contain one label per line.
+
+To download a starter COCO model:
+
+```bash
+mkdir -p models
+wget https://storage.googleapis.com/download.tensorflow.org/models/tflite/coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip
+unzip -j coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip "detect.tflite" -d models/
+wget -O models/labelmap.txt https://raw.githubusercontent.com/JerryKurata/TFlite-object-detection/main/labelmap.txt
+rm coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip
+```
 
 Check that the files are present:
 
@@ -315,7 +374,7 @@ Activate the virtual environment and reinstall requirements:
 ```bash
 cd ~/image-recognize
 source .venv/bin/activate
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
 ### `ModuleNotFoundError: No module named mediapipe`
@@ -325,7 +384,7 @@ Confirm you are using Raspberry Pi OS 64-bit and that the virtual environment is
 ```bash
 uname -m
 source .venv/bin/activate
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
 On 64-bit Raspberry Pi OS, `uname -m` should usually show:
@@ -334,16 +393,16 @@ On 64-bit Raspberry Pi OS, `uname -m` should usually show:
 aarch64
 ```
 
-### `ModuleNotFoundError: No module named tflite_runtime`
+### `ModuleNotFoundError: No module named tensorflow`
 
 Activate the virtual environment and reinstall requirements:
 
 ```bash
 source .venv/bin/activate
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
-If the package is unavailable for your Raspberry Pi OS/Python version, you may need to use a compatible Raspberry Pi OS image or install a compatible TensorFlow Lite runtime package.
+The object detector uses `tensorflow-cpu` as the TensorFlow Lite provider because `tflite-runtime` is not available for the newer Raspberry Pi OS Trixie/Python 3.12 setup used here.
 
 ### Object detector says model files are missing
 
@@ -385,7 +444,7 @@ After reboot:
 
 ```bash
 sudo apt update
-sudo apt install -y python3-venv python3-pip libatlas-base-dev libopencv-dev v4l-utils fswebcam
+sudo apt install -y python3-venv python3-pip libopenblas-dev libopencv-dev v4l-utils fswebcam unzip wget curl git
 sudo apt install -y code
 code --install-extension ms-python.python
 sudo usermod -a -G video $USER
@@ -396,10 +455,25 @@ After reboot:
 
 ```bash
 cd ~/image-recognize
-python3 -m venv .venv
+sudo apt update
+sudo apt install -y build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev git
+curl https://pyenv.run | bash
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+source ~/.bashrc
+pyenv install 3.12
+deactivate 2>/dev/null
+rm -rf .venv
+~/.pyenv/versions/3.12.*/bin/python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
+mkdir -p models
+wget https://storage.googleapis.com/download.tensorflow.org/models/tflite/coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip
+unzip -j coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip "detect.tflite" -d models/
+wget -O models/labelmap.txt https://raw.githubusercontent.com/JerryKurata/TFlite-object-detection/main/labelmap.txt
+rm coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip
 ls /dev/video*
 v4l2-ctl --list-devices
 python3 camera_test.py

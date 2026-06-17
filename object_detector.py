@@ -18,12 +18,31 @@ import os
 import cv2
 import numpy as np
 
+INTERPRETER_IMPORT_ERRORS = []
+
 try:
     from tflite_runtime.interpreter import Interpreter
-except ImportError:
+except ImportError as error:
+    INTERPRETER_IMPORT_ERRORS.append(f"tflite_runtime: {error}")
     try:
-        from tensorflow.lite.python.interpreter import Interpreter
-    except ImportError:
+        from tensorflow.lite import Interpreter
+    except ImportError as error:
+        INTERPRETER_IMPORT_ERRORS.append(f"tensorflow.lite: {error}")
+        try:
+            from tensorflow.lite.python.interpreter import Interpreter
+        except ImportError as error:
+            INTERPRETER_IMPORT_ERRORS.append(f"tensorflow.lite.python.interpreter: {error}")
+            try:
+                from ai_edge_litert.interpreter import Interpreter
+            except ImportError as error:
+                INTERPRETER_IMPORT_ERRORS.append(f"ai_edge_litert: {error}")
+                Interpreter = None
+except Exception as error:
+    INTERPRETER_IMPORT_ERRORS.append(f"tflite_runtime: {error}")
+    try:
+        from tensorflow.lite import Interpreter
+    except Exception as error:
+        INTERPRETER_IMPORT_ERRORS.append(f"tensorflow.lite: {error}")
         Interpreter = None
 
 
@@ -95,7 +114,15 @@ def check_model_files():
     """Make sure the model files are present before starting."""
     if Interpreter is None:
         print("ERROR: TensorFlow Lite is not installed.")
-        print("Try: python3 -m pip install -r requirements.txt")
+        print("Activate the virtual environment and install the requirements:")
+        print("    source .venv/bin/activate")
+        print(
+            "    python3 -m pip install -r requirements.txt "
+            "--extra-index-url https://google.github.io/mediapipe/getting_started/python.html"
+        )
+        print("Import attempts:")
+        for import_error in INTERPRETER_IMPORT_ERRORS:
+            print("   -", import_error)
         return False
 
     if not os.path.exists(MODEL_PATH):

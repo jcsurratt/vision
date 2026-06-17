@@ -16,7 +16,12 @@ import random
 import time
 
 import cv2
-import mediapipe as mp
+
+try:
+    import mediapipe as mp
+except ImportError as error:
+    mp = None
+    MEDIAPIPE_IMPORT_ERROR = error
 
 
 # =========================
@@ -181,6 +186,17 @@ def create_game_info():
 def main():
     print("Starting Rock Paper Scissors AI...")
     print("Press space to play, r to reset, or q to quit.")
+
+    if mp is None:
+        print("ERROR: MediaPipe is not installed.")
+        print("Import error:", MEDIAPIPE_IMPORT_ERROR)
+        print("Activate the virtual environment and install the requirements:")
+        print("    source .venv/bin/activate")
+        print(
+            "    python3 -m pip install -r requirements.txt "
+            "--extra-index-url https://google.github.io/mediapipe/getting_started/python.html"
+        )
+        return
 
     camera = open_camera()
     if camera is None:
