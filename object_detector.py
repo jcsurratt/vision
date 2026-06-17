@@ -25,9 +25,11 @@ try:
 except ImportError as error:
     INTERPRETER_IMPORT_ERRORS.append(f"tflite_runtime: {error}")
     try:
-        from tensorflow.lite import Interpreter
+        import tensorflow as tf
+
+        Interpreter = tf.lite.Interpreter
     except ImportError as error:
-        INTERPRETER_IMPORT_ERRORS.append(f"tensorflow.lite: {error}")
+        INTERPRETER_IMPORT_ERRORS.append(f"tensorflow: {error}")
         try:
             from tensorflow.lite.python.interpreter import Interpreter
         except ImportError as error:
@@ -40,9 +42,11 @@ except ImportError as error:
 except Exception as error:
     INTERPRETER_IMPORT_ERRORS.append(f"tflite_runtime: {error}")
     try:
-        from tensorflow.lite import Interpreter
+        import tensorflow as tf
+
+        Interpreter = tf.lite.Interpreter
     except Exception as error:
-        INTERPRETER_IMPORT_ERRORS.append(f"tensorflow.lite: {error}")
+        INTERPRETER_IMPORT_ERRORS.append(f"tensorflow: {error}")
         Interpreter = None
 
 
@@ -114,12 +118,17 @@ def check_model_files():
     """Make sure the model files are present before starting."""
     if Interpreter is None:
         print("ERROR: TensorFlow Lite is not installed.")
+        print("The object detector needs the tensorflow-cpu package.")
+        print("First confirm the Pi copy of requirements.txt includes tensorflow-cpu:")
+        print("    grep -n . requirements.txt")
         print("Activate the virtual environment and install the requirements:")
         print("    source .venv/bin/activate")
         print(
             "    python3 -m pip install -r requirements.txt "
             "--extra-index-url https://google.github.io/mediapipe/getting_started/python.html"
         )
+        print("If tensorflow-cpu still does not install, try installing it directly:")
+        print("    python3 -m pip install tensorflow-cpu")
         print("Import attempts:")
         for import_error in INTERPRETER_IMPORT_ERRORS:
             print("   -", import_error)

@@ -153,9 +153,12 @@ deactivate 2>/dev/null
 rm -rf .venv
 ~/.pyenv/versions/3.12.*/bin/python3 -m venv .venv
 source .venv/bin/activate
+grep -n . requirements.txt
 python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
+
+The `grep -n . requirements.txt` command should show `tensorflow-cpu` in the file. If it does not, the Raspberry Pi has an older copy of `requirements.txt`; replace it with the current project copy before continuing.
 
 ### Older Raspberry Pi OS Images
 
@@ -191,12 +194,13 @@ With the virtual environment active, run:
 python3 -c "import cv2; print('OpenCV OK')"
 python3 -c "import mediapipe; print('MediaPipe OK')"
 python3 -c "import numpy; print('NumPy OK')"
-python3 -c "from tensorflow.lite import Interpreter; print('TensorFlow Lite OK')"
+python3 -c "import tensorflow as tf; print('TensorFlow OK', tf.__version__)"
 ```
 
 If one of these commands fails, reinstall the project requirements:
 
 ```bash
+grep -n . requirements.txt
 python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
 
@@ -395,7 +399,19 @@ aarch64
 
 ### `ModuleNotFoundError: No module named tensorflow`
 
-Activate the virtual environment and reinstall requirements:
+The Raspberry Pi probably has an older copy of `requirements.txt`, or `tensorflow-cpu` was not installed. Confirm that `tensorflow-cpu` is listed:
+
+```bash
+grep -n . requirements.txt
+```
+
+Expected output should include:
+
+```text
+3:tensorflow-cpu
+```
+
+Then activate the virtual environment and reinstall requirements:
 
 ```bash
 source .venv/bin/activate
@@ -403,6 +419,13 @@ python3 -m pip install -r requirements.txt --extra-index-url https://google.gith
 ```
 
 The object detector uses `tensorflow-cpu` as the TensorFlow Lite provider because `tflite-runtime` is not available for the newer Raspberry Pi OS Trixie/Python 3.12 setup used here.
+
+If `tensorflow-cpu` is still missing after that command, install it directly and recheck:
+
+```bash
+python3 -m pip install tensorflow-cpu
+python3 -c "import tensorflow as tf; print('TensorFlow OK', tf.__version__)"
+```
 
 ### Object detector says model files are missing
 
@@ -467,6 +490,7 @@ deactivate 2>/dev/null
 rm -rf .venv
 ~/.pyenv/versions/3.12.*/bin/python3 -m venv .venv
 source .venv/bin/activate
+grep -n . requirements.txt
 python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 mkdir -p models

@@ -49,9 +49,12 @@ deactivate 2>/dev/null
 rm -rf .venv
 ~/.pyenv/versions/3.12.*/bin/python3 -m venv .venv
 source .venv/bin/activate
+grep -n . requirements.txt
 python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
 ```
+
+The `grep -n . requirements.txt` command should show `tensorflow-cpu`. If it does not, the Pi has an older copy of `requirements.txt`.
 
 If MediaPipe installation is slow or unavailable on your Raspberry Pi OS image, install packages ahead of camp and test on the exact Pi image students will use.
 
@@ -194,11 +197,13 @@ On Raspberry Pi OS Trixie, use the `pyenv` Python 3.12 setup above instead of th
 
 ### `ModuleNotFoundError: No module named tensorflow`
 
-The object detector uses `tensorflow-cpu` as its TensorFlow Lite provider. Reinstall requirements inside the virtual environment:
+The object detector uses `tensorflow-cpu` as its TensorFlow Lite provider. Confirm that the Pi has the current requirements file, then reinstall requirements inside the virtual environment:
 
 ```bash
+grep -n . requirements.txt
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt --extra-index-url https://google.github.io/mediapipe/getting_started/python.html
+python3 -c "import tensorflow as tf; print('TensorFlow OK', tf.__version__)"
 ```
 
 ### Object detector says model files are missing
