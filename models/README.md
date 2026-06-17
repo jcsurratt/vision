@@ -18,6 +18,10 @@ models/labelmap.txt
 
 The label file should contain one object label per line.
 
+The label file must match the model. Adding a new word to `labelmap.txt` does not teach `detect.tflite` a new object. The model has to be trained for the labels it uses.
+
+For example, if a model was trained on COCO objects, use the matching COCO label file. If you switch to a different model, also switch to that model's matching label file.
+
 This folder is only for object detection model files. The audio demo files, such as `winner.mp3` and `loser.mp3`, should stay in the main project folder unless the Python code is changed to point somewhere else.
 
 To download a starter COCO model on the Raspberry Pi, run these commands from the project folder:
